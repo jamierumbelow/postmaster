@@ -2,10 +2,10 @@ net = require 'net'
 version = require('../package.json').version
 
 class exports.Server
-    constructor: (next, @host = 'localhost', @port = 5666) ->
+    constructor: (next, @host = 'localhost', @port = 5666, @quiet = false) ->
         @server = @createServer()
         @server.listen @port, @host, =>
-            console.log "Postmaster reporting for duty on #{@host}:#{@port} (HTTP - #{@host}:#{@port+1})"
+            console.log "Postmaster reporting for duty on #{@host}:#{@port} (HTTP - #{@host}:#{@port+1})" unless @quiet
             next() if next?
 
         @server.on 'connection', (socket) =>

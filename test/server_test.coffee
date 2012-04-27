@@ -1,16 +1,22 @@
 net = require 'net'
-{server} = require '..'
+{Server, VERSION} = require '..'
 {testCase} = require 'nodeunit'
 
 module.exports = testCase
     setUp: (next) ->
-        @connection = net.createConnection 25
-        next()
+        @server = new Server =>
+            @connection = net.createConnection 5666
+            @connection.setEncoding 'utf8'
 
-    testHello: (test) ->
-        test.ok(true)
-        test.done()
+            next()
+
+    testConnection: (test) ->
+        @connection.on 'data', (data) ->
+            test.equal data, "220 localhost Postmaster #{VERSION}\r\n"
+            test.done()
 
     tearDown: (next) ->
         @connection.end()
+        @server.close()
+
         next()

@@ -3,7 +3,6 @@
 
 task 'build', 'Compile the CoffeeScript source', ->
     exec 'coffee -b -c -o lib src'
-    exec 'coffee -b -c test'
 
 task 'run', 'Run an instance of Postmaster', ->
     exec './bin/postmaster'

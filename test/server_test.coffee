@@ -13,6 +13,7 @@ module.exports = testCase
             @connection.setEncoding 'utf8'
 
             next()
+        , 'localhost', 5666, true
 
     # Close the connection to our server, followed by the server itself
     tearDown: (next) ->

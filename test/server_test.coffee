@@ -23,7 +23,7 @@ module.exports = testCase
 
     testConnection: (test) ->
         @connection.on 'data', (data) ->
-            test.equal data, "220 localhost Postmaster #{VERSION}\r\n"
+            test.equal data, "220 localhost Postmaster #{VERSION}\n"
             test.done()
 
     testHello: (test) ->
@@ -31,14 +31,21 @@ module.exports = testCase
             test.equal data, "250 Hello postmaster-test-connection, nice to meet you"
             test.done()
 
-        @connection.write "HELO postmaster-test-connection\r\n"
+        @connection.write "HELO postmaster-test-connection\n"
 
     testOtherHello: (test) ->
         onResponse @connection, (data) ->
             test.equal data, "250 Hello other-test-connection, nice to meet you"
             test.done()
 
-        @connection.write "HELO other-test-connection\r\n"
+        @connection.write "HELO other-test-connection\n"
+
+    testEhlo: (test) ->
+        onResponse @connection, (data) ->
+            test.equal data, "250 Hello postmaster-test-connection, nice to meet you"
+            test.done()
+
+        @connection.write "EHLO postmaster-test-connection\n"
 
 #
 # -----------------------------------------------------------------------
@@ -50,7 +57,7 @@ onResponse = (connection, next) ->
     buffer = ''
 
     connection.on 'data', (data) ->
-        lines = (buffer + data).split("\r\n")
+        lines = (buffer + data).split("\n")
         buffer = lines.pop()
 
         lines.forEach (line, index) ->

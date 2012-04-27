@@ -12,21 +12,21 @@ class exports.Server
             socket.setEncoding 'utf8'
 
             socket.on 'connect', =>
-                socket.write "220 #{@host} Postmaster #{version}\r\n"
+                socket.write "220 #{@host} Postmaster #{version}\n"
 
             buffer = ''
 
             socket.on 'data', (data) =>
-                lines = (buffer + data).split("\r\n")
+                lines = (buffer + data).split("\n")
                 buffer = lines.pop()
 
                 lines.forEach (line, index) =>
                     @handler(socket, line)
 
     handler: (socket, data) ->
-        if data[0...4] is "HELO"
-            name = data.match(/^HELO (.*)$/m)[1]
-            socket.write "250 Hello #{name}, nice to meet you\r\n"
+        if data[0...4] is "HELO" or data[0...4] is "EHLO"
+            name = data.match(/^(HELO|EHLO) (.*)$/m)[2]
+            socket.write "250 Hello #{name}, nice to meet you\n"
 
     createServer: ->
         net.createServer()

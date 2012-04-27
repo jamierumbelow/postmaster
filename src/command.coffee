@@ -10,4 +10,4 @@ program
   .option('-p, --port', 'Port number [5666]', parseInt, 5666)
   .parse(process.argv)
 
-server = new postmaster.Server program.host, program.port
+server = new postmaster.Server null, program.host, program.port

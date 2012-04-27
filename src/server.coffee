@@ -5,7 +5,7 @@ class exports.Server
     constructor: (next, @host = 'localhost', @port = 5666) ->
         @server = @createServer()
         @server.listen @port, @host, =>
-            console.log "Postmaster reporting for duty on #{@host}:#{@port}"
+            console.log "Postmaster reporting for duty on #{@host}:#{@port} (HTTP - #{@host}:#{@port+1})"
             next() if next?
 
         @server.on 'connection', (socket) =>

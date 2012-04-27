@@ -11,3 +11,13 @@ Install Postmaster with [npm](http://npmjs.org/):
 You can then run Postmaster with the `postmaster` command, which should be in your path:
 
     $ postmaster
+    > Postmaster reporting for duty on localhost:5666 (HTTP - localhost:5667)
+
+Change the bound hostname and port with the `-l` and `-p` flags, respectively:
+
+    $ postmaster -p 4432 -l 127.0.0.1
+    > Postmaster reporting for duty on 127.0.0.1:4432 (HTTP - 127.0.0.1:4433)
+
+## HTTP API
+
+The HTTP API will open up on the next port from the Postmaster port. Sending an `HTTP GET` request to `/emails` will return a JSON array of the parsed email and associated headers.

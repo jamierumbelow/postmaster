@@ -92,3 +92,16 @@ module.exports = testCase
 		test.equal state.email.body, "Some test data\nMore test\n\nLove,"
 
 		test.done()
+
+	testReset: (test) ->
+		state =
+			state: Server.STATES.default
+			email: { from: 'blah@example.com', to: [ 'another@example.com' ], body: 'blah blah' }
+		@socket = { write: (data) => }
+
+		@server.handler @socket, "RSET", state
+		test.equal state.email.from, ''
+		test.ok state.email.to.length is 0
+		test.equal state.email.body, ''
+
+		test.done()

@@ -87,6 +87,13 @@ module.exports = testCase
         @connection.write "This is a test of Postmaster\n"
         @connection.write "\n.\n"
 
+    testPing: (test) ->
+        onResponse @connection, (data) ->
+            test.equal(data, "250 OK")
+            test.done()
+
+        @connection.write "NOOP\n"
+
     testIncorrectVerb: (test) ->
         onResponse @connection, (data) ->
             test.equal data, '502 Command Not Implemented'

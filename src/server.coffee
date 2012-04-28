@@ -91,6 +91,10 @@ class exports.Server
             else
                 state.email.body += line
 
+        # Is it a ping message?
+        else if token.meaning is 'ping'
+            socket.write "250 OK\n"
+
         # The parser couldn't understand the command passed in, or the syntax
         # was bad, so respond accordingly.
         else if token.meaning is 'wtf'

@@ -3,9 +3,10 @@ version = require('../package.json').version
 Parser = require('./parser').Parser
 
 class exports.Server
-    STATES = { default: 1, data: 2, possibly_end_data: 3 }
+    @STATES = { default: 1, data: 2, possibly_end_data: 3 }
 
     constructor: (next, @host = 'localhost', @port = 5666, @quiet = false) ->
+        STATES = Server.STATES
         @parser = new Parser()
 
         @server = @createServer()
@@ -32,6 +33,7 @@ class exports.Server
                     @handler(socket, line, state)
 
     handler: (socket, line, state) ->
+        STATES = Server.STATES
         token = if state.state is STATES.default then @parser.parseLine(line) else @parser.dataCollection()
 
         # The big if statement below is fine for the majority of cases,
@@ -48,7 +50,9 @@ class exports.Server
         # we need to get out of this state posthaste!
         else if token.meaning is 'data-collection' and state.state is STATES.possibly_end_data and line is "."
             state.state = STATES.default
-            socket.write "250 Successsfully saved message (#1)\n"
+            state.email.body = state.email.body.substring 0, state.email.body.length - 2
+
+            return socket.write "250 Successsfully saved message (#1)\n"
 
         # If we've made it this far and we're in the data state, then ensure we stay
         # that way. If not, go back to default.
@@ -89,7 +93,7 @@ class exports.Server
             if line is ""
                 state.email.body += "\n"
             else
-                state.email.body += line
+                state.email.body += line + "\n"
 
         # Is it a ping message?
         else if token.meaning is 'ping'

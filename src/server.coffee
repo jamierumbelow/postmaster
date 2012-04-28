@@ -100,6 +100,10 @@ class exports.Server
             state.email = @newEmail()
             socket.write "250 OK\n"
 
+        # Is it the quit command?
+        else if token.meaning is 'quit'
+            socket.end()
+
         # The parser couldn't understand the command passed in, or the syntax
         # was bad, so respond accordingly.
         else if token.meaning is 'wtf'

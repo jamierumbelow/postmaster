@@ -101,6 +101,15 @@ module.exports = testCase
 
         @connection.write "RSET\n"
 
+    testQuit: (test) ->
+        test.expect(1)
+
+        @connection.on 'end', ->
+            test.ok true, "connection wasn't terminated"
+            test.done()
+            
+        @connection.write "QUIT\n"
+
     testIncorrectVerb: (test) ->
         onResponse @connection, (data) ->
             test.equal data, '502 Command Not Implemented'

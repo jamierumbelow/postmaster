@@ -1,6 +1,7 @@
 net = require 'net'
 version = require('../package.json').version
 Parser = require('./parser').Parser
+Store = require('./store').Store
 
 class exports.Server
     @STATES = { default: 1, data: 2, possibly_end_data: 3 }
@@ -8,6 +9,7 @@ class exports.Server
     constructor: (next, @host = 'localhost', @port = 5666, @quiet = false) ->
         STATES = Server.STATES
         @parser = new Parser()
+        @store = new Store()
 
         @server = @createServer()
         @server.listen @port, @host, =>
@@ -51,8 +53,9 @@ class exports.Server
         else if token.meaning is 'data-collection' and state.state is STATES.possibly_end_data and line is "."
             state.state = STATES.default
             state.email.body = state.email.body.substring 0, state.email.body.length - 2
+            id = @store.add state.email
 
-            return socket.write "250 Successsfully saved message (#1)\n"
+            return socket.write "250 Successsfully saved message (##{id})\n"
 
         # If we've made it this far and we're in the data state, then ensure we stay
         # that way. If not, go back to default.

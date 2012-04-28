@@ -1,5 +1,5 @@
 {testCase} = require 'nodeunit'
-{Server} = require '..'
+{Server, Store} = require '..'
 
 module.exports = testCase
 	setUp: (next) ->
@@ -56,6 +56,8 @@ module.exports = testCase
 		test.done()
 
 	testDataCollection: (test) ->
+		test.expect 18
+
 		state =
 			state: Server.STATES.default
 			email: @server.newEmail()
@@ -85,7 +87,18 @@ module.exports = testCase
 		test.equal state.state, Server.STATES.possibly_end_data
 		test.equal state.email.body, "Some test data\nMore test\n\nLove,\n\n"
 
-		@socket = { write: (data) => test.equal data, "250 Successsfully saved message (#1)\n" }
+		random_id = Math.floor(Math.random() * 10) + 1
+
+		@socket = { write: (data) => test.equal data, "250 Successsfully saved message (##{random_id})\n" }
+		@store =
+			add: (email) =>
+				test.equal email.from, ''
+				test.equal email.to.length, 0
+				test.equal email.body, "Some test data\nMore test\n\nLove,"
+
+				random_id
+
+		@server.store = @store
 
 		@server.handler @socket, ".", state
 		test.equal state.state, Server.STATES.default

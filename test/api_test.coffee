@@ -10,9 +10,15 @@ module.exports = testCase
     testServerIsCreated: (test) ->
         test.ok (@api.server instanceof http.Server), '@api.server isn\'t an instance of http.Server'
 
-        getRequest 'localhost', 5667, '/', (data) =>
-            test.equal data, 'Hello World!'
-            test.ok(true)
+        getRequest 'localhost', 5667, '/ping', (data) =>
+            test.equal data, '<a href="https://github.com/jamierumbelow/postmaster">Postmaster</a> reporting for duty'
+
+            test.done()
+
+    testServerThrows404: (test) ->
+        getRequest 'localhost', 5667, '/jkljfoiwuro8aw8fw498', (data, res) =>
+            test.equal data, '<h1>404 Not Found</h1>'
+            test.equal res.statusCode, 404
 
             test.done()
 
@@ -23,4 +29,4 @@ module.exports = testCase
 getRequest = (host, port, path, next) ->
     http.get { host: host, port: port, path: path}, (res) ->
         res.on 'data', (data) ->
-            next data.toString()
+            next data.toString(), res

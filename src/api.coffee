@@ -8,5 +8,9 @@ class exports.API
             next() if next?
 
     handle: (req, res) ->
-        res.writeHead(200)
-        res.end 'Hello World!'
+        if req.url is '/ping'
+            res.writeHead 200, { 'Content-Type': 'text/html' }
+            res.end '<a href="https://github.com/jamierumbelow/postmaster">Postmaster</a> reporting for duty'
+        else
+            res.writeHead 404, { 'Content-Type': 'text/html' }
+            res.end '<h1>404 Not Found</h1>'

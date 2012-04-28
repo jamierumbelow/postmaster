@@ -21,3 +21,5 @@ Change the bound hostname and port with the `-l` and `-p` flags, respectively:
 ## HTTP API
 
 The HTTP API will open up on the next port from the Postmaster port. Sending an `HTTP GET` request to `/emails` will return a JSON array of the parsed email and associated headers.
+
+    $ curl http://localhost:5667/emails

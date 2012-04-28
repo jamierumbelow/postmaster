@@ -94,6 +94,13 @@ module.exports = testCase
 
         @connection.write "NOOP\n"
 
+    testReset: (test) ->
+        onResponse @connection, (data) ->
+            test.equal(data, "250 OK")
+            test.done()
+
+        @connection.write "RSET\n"
+
     testIncorrectVerb: (test) ->
         onResponse @connection, (data) ->
             test.equal data, '502 Command Not Implemented'

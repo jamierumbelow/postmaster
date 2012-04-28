@@ -104,6 +104,11 @@ class exports.Server
         else if token.meaning is 'quit'
             socket.end()
 
+        # WE DON'T NEED NO EDUCATION
+        else if token.meaning is 'info'
+            socket.write "214 Postmaster is a fake SMTP server used for testing.\n"
+            socket.write "214 For more, please visit https://github.com/jamierumbelow/postmaster\n"
+
         # The parser couldn't understand the command passed in, or the syntax
         # was bad, so respond accordingly.
         else if token.meaning is 'wtf'

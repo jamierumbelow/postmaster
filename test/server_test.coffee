@@ -107,8 +107,21 @@ module.exports = testCase
         @connection.on 'end', ->
             test.ok true, "connection wasn't terminated"
             test.done()
-            
+
         @connection.write "QUIT\n"
+
+    testHelp: (test) ->
+        end = false
+
+        onResponse @connection, (data) ->
+            if end
+                test.equal data, "214 For more, please visit https://github.com/jamierumbelow/postmaster"
+                test.done()
+            else
+                test.equal data, "214 Postmaster is a fake SMTP server used for testing."
+                end = true
+            
+        @connection.write "HELP\n"
 
     testIncorrectVerb: (test) ->
         onResponse @connection, (data) ->

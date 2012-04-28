@@ -11,4 +11,7 @@ program
   .option('-q, --quiet', 'Silence output')
   .parse(process.argv)
 
-server = new postmaster.Server null, program.listen, program.port, (program.quiet?)
+store = new postmaster.Store()
+
+server = new postmaster.Server null, program.listen, program.port, (program.quiet?), store
+api = new postmaster.API program.listen, program.port + 1, null, store

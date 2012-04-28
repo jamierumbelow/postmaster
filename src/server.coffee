@@ -6,10 +6,9 @@ Store = require('./store').Store
 class exports.Server
     @STATES = { default: 1, data: 2, possibly_end_data: 3 }
 
-    constructor: (next, @host = 'localhost', @port = 5666, @quiet = false) ->
+    constructor: (next, @host = 'localhost', @port = 5666, @quiet = false, @store = false) ->
         STATES = Server.STATES
         @parser = new Parser()
-        @store = new Store()
 
         @server = @createServer()
         @server.listen @port, @host, =>

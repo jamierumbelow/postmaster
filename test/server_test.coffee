@@ -1,5 +1,5 @@
 net = require 'net'
-{Server, VERSION} = require '..'
+{Server, VERSION, Store} = require '..'
 {testCase} = require 'nodeunit'
 
 module.exports = testCase
@@ -13,7 +13,7 @@ module.exports = testCase
             @connection.setEncoding 'utf8'
 
             next()
-        , 'localhost', 5666, true
+        , 'localhost', 5666, true, new Store()
 
     # Close the connection to our server, followed by the server itself
     tearDown: (next) ->

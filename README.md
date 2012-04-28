@@ -23,3 +23,21 @@ Change the bound hostname and port with the `-l` and `-p` flags, respectively:
 The HTTP API will open up on the next port from the Postmaster port. Sending an `HTTP GET` request to `/emails` will return a JSON array of the parsed email and associated headers.
 
     $ curl http://localhost:5667/emails
+
+## Development / Tests
+
+Grab the most recent copy of the codebase from GitHub:
+
+    $ git clone git://github.com/jamierumbelow/postmaster.git postmaster
+
+Install yer modules:
+
+    $ npm install
+
+And run the test suite with cake!
+
+    $ cake test
+
+If you're developing locally and would like an easy way to rebuild the source, run `cake build`:
+
+    $ cake build && ./bin/postmaster

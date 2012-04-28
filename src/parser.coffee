@@ -1,3 +1,5 @@
+mimelib = require 'mimelib'
+
 class exports.Parser
     COMMANDS = [ 'HELO', 'EHLO', 'MAIL FROM', 'RCPT TO', 'DATA', 'RSET', 'NOOP', 'QUIT', 'HELP' ]
 
@@ -53,3 +55,23 @@ class exports.Parser
 
     dataCollection: (string) ->
         meaning: 'data-collection'
+
+    # Parse an email message body, extracting headers and other important
+    # information and separating headers and content itself.
+    parseEmail: (email) ->
+        [ unparsed_headers, body ] = email.split "\n\n"
+
+        unparsed_headers = unparsed_headers.split "\n"
+        headers = {}
+
+        for h in unparsed_headers
+            match = h.match /^([A-Za-z0-9\-_]+): (.*)$/im
+            headers[match[1]] = match[2] if match
+
+        headers: headers
+        body: body
+        html: (if headers['Content-Type']? then !!headers['Content-Type'].match(/html/i) else false)
+        subject: (if headers['Subject'] then @parseSubject(headers['Subject']) else false)
+
+    parseSubject: (header) ->
+        mimelib.decodeMimeWord(header)

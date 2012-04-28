@@ -64,3 +64,37 @@ module.exports = testCase
         test.equal(@parser.parseLine('SOME OTHER COMMAND:params').meaning, 'wtf')
 
         test.done()
+
+    testParsesEmail: (test) ->
+        testEmail =
+            from: 'test@example.com'
+            to: [ 'another@test.example.com' ]
+            body: 'User-Agent: CodeIgniter\nDate: Sat, 28 Apr 2012 15:21:17 +0100\nFrom: <test@example.com>\nReturn-Path: <test@example.com>\nTo: jamie@jamierumbelow.net\nSubject: =?utf-8?Q?Some_random_email?=\nReply-To: "test@example.com" <test@example.com>\nX-Sender: test@example.com\nX-Mailer: CodeIgniter\nX-Priority: 3 (Normal)\nMessage-ID: <4f9bfcdd7499e@example.com>\nMime-Version: 1.0\nContent-Type: text/plain; charset=utf-8\nContent-Transfer-Encoding: 8bit\n\nOh yeah'
+
+        parsed = @parser.parseEmail(testEmail.body)
+
+        test.equal parsed.headers.length(), 14
+        test.equal parsed.headers['User-Agent'], 'CodeIgniter'
+        test.equal parsed.headers['Date'], 'Sat, 28 Apr 2012 15:21:17 +0100'
+
+        test.equal parsed.body, 'Oh yeah'
+
+        test.equal parsed.html, false
+        test.equal parsed.subject, 'Some random email'
+
+        testEmail =
+            from: 'test@example.com'
+            to: [ 'another@test.example.com' ]
+            body: 'User-Agent: Postmaster\nContent-Type: text/html\n\nAnother email'
+
+        parsed = @parser.parseEmail(testEmail.body)
+
+        test.equal parsed.headers.length(), 2
+        test.equal parsed.headers['User-Agent'], 'Postmaster'
+        test.equal parsed.headers['Content-Type'], 'text/html'
+
+        test.equal parsed.body, 'Another email'
+
+        test.equal parsed.html, true
+
+        test.done()

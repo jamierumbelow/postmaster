@@ -1,6 +1,6 @@
 http = require 'http'
 {testCase} = require 'nodeunit'
-{API, Store} = require '..'
+{API, Store, Parser} = require '..'
 
 module.exports = testCase
     setUp: (next) ->
@@ -23,6 +23,19 @@ module.exports = testCase
             test.done()
 
     testReturnsAllEmails: (test) ->
+        testEmail =
+            from: 'test@example.com'
+            to: [ 'another@test.example.com' ]
+            body: 'User-Agent: CodeIgniter\nDate: Sat, 28 Apr 2012 15:21:17 +0100\nFrom: <test@example.com>\nReturn-Path: <test@example.com>\nTo: jamie@jamierumbelow.net\nSubject: =?utf-8?Q?Some_random_email?=\nReply-To: "test@example.com" <test@example.com>\nX-Sender: test@example.com\nX-Mailer: CodeIgniter\nX-Priority: 3 (Normal)\nMessage-ID: <4f9bfcdd7499e@example.com>\nMime-Version: 1.0\nContent-Type: text/plain; charset=utf-8\nContent-Transfer-Encoding: 8bit\n\nOh yeah'
+
+        @parser = new Parser()
+        
+        email = testEmail
+
+        testEmail = @parser.parseEmail(testEmail.body)
+        testEmail.from = email.from
+        testEmail.to = email.to
+        
         @store = new Store()
         @store.add testEmail
         
@@ -44,8 +57,3 @@ getRequest = (host, port, path, next) ->
     http.get { host: host, port: port, path: path}, (res) ->
         res.on 'data', (data) ->
             next data.toString(), res
-
-testEmail =
-        from: 'test@example.com'
-        to: [ 'another@test.example.com' ]
-        body: 'User-Agent: CodeIgniter\nDate: Sat, 28 Apr 2012 15:21:17 +0100\nFrom: <test@example.com>\nReturn-Path: <test@example.com>\nTo: jamie@jamierumbelow.net\nSubject: =?utf-8?Q?Some_random_email?=\nReply-To: "test@example.com" <test@example.com>\nX-Sender: test@example.com\nX-Mailer: CodeIgniter\nX-Priority: 3 (Normal)\nMessage-ID: <4f9bfcdd7499e@example.com>\nMime-Version: 1.0\nContent-Type: text/plain; charset=utf-8\nContent-Transfer-Encoding: 8bit\n\nOh yeah'

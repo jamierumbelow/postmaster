@@ -27,26 +27,72 @@ module.exports = testCase
             test.equal data, "220 localhost Postmaster #{VERSION}\n"
             test.done()
 
-    testHello: (test) ->
+    # testHello: (test) ->
+    #     onResponse @connection, (data) ->
+    #         test.equal data, "250 Hello postmaster-test-connection, nice to meet you"
+    #         test.done()
+
+    #     @connection.write "HELO postmaster-test-connection\n"
+
+    # testOtherHello: (test) ->
+    #     onResponse @connection, (data) ->
+    #         test.equal data, "250 Hello other-test-connection, nice to meet you"
+    #         test.done()
+
+    #     @connection.write "HELO other-test-connection\n"
+
+    # testEhlo: (test) ->
+    #     onResponse @connection, (data) ->
+    #         test.equal data, "250 Hello postmaster-test-connection, nice to meet you"
+    #         test.done()
+
+    #     @connection.write "EHLO postmaster-test-connection\n"
+
+    # testFrom: (test) ->
+    #     onResponse @connection, (data) ->
+    #         test.equal data, "250 OK"
+    #         test.done()
+
+    #     @connection.write "MAIL FROM:<test@example.com>\n"
+
+    # testTo: (test) ->
+    #     n = 1
+
+    #     onResponse @connection, (data) ->
+    #         test.equal data, "250 OK"
+    #         test.done() if n is 5
+    #         n++
+            
+    #     @connection.write "RCPT TO:<other@example.com>\n"
+    #     @connection.write "RCPT TO:<another@example.com>\n"
+    #     @connection.write "RCPT TO:<some.other+email@example.com>\n"
+    #     @connection.write "RCPT TO:<again@another.example.com>\n"
+    #     @connection.write "RCPT TO:<weird.example+email@another.example.com>\n"
+
+    testData: (test) ->
+        n = 1
+
         onResponse @connection, (data) ->
-            test.equal data, "250 Hello postmaster-test-connection, nice to meet you"
+            if n is 1
+                test.equal(data, "354 OK") 
+            else if n is 2
+                test.equal(data, "250 Successsfully saved message (#1)")
+                test.done()
+            
+            n++
+
+        @connection.write "DATA\n"
+        @connection.write "\n"
+        @connection.write "Hello everyone,\n"
+        @connection.write "This is a test of Postmaster\n"
+        @connection.write "\n.\n"
+
+    testIncorrectVerb: (test) ->
+        onResponse @connection, (data) ->
+            test.equal data, '502 Command Not Implemented'
             test.done()
 
-        @connection.write "HELO postmaster-test-connection\n"
-
-    testOtherHello: (test) ->
-        onResponse @connection, (data) ->
-            test.equal data, "250 Hello other-test-connection, nice to meet you"
-            test.done()
-
-        @connection.write "HELO other-test-connection\n"
-
-    testEhlo: (test) ->
-        onResponse @connection, (data) ->
-            test.equal data, "250 Hello postmaster-test-connection, nice to meet you"
-            test.done()
-
-        @connection.write "EHLO postmaster-test-connection\n"
+        @connection.write "SOME COMMAND\n"
 
 #
 # -----------------------------------------------------------------------

@@ -50,3 +50,6 @@ class exports.Parser
 
     parseWTF: (string) ->
         meaning: 'wtf'
+
+    dataCollection: (string) ->
+        meaning: 'data-collection'

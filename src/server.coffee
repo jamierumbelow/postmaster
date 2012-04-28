@@ -7,7 +7,6 @@ class exports.Server
 
     constructor: (next, @host = 'localhost', @port = 5666, @quiet = false) ->
         @parser = new Parser()
-        @state = STATES.default
 
         @server = @createServer()
         @server.listen @port, @host, =>
@@ -21,53 +20,79 @@ class exports.Server
                 socket.write "220 #{@host} Postmaster #{version}\n"
 
             buffer = ''
+            state =
+                state: STATES.default
+                email: @newEmail()
 
             socket.on 'data', (data) =>
                 lines = (buffer + data).split("\n")
                 buffer = lines.pop()
 
                 lines.forEach (line, index) =>
-                    @handler(socket, line)
+                    @handler(socket, line, state)
 
-    handler: (socket, data) ->
-        email = @newEmail()
-        token = if @state is STATES.default then @parser.parseLine(data) else @parser.dataCollection()
-        
+    handler: (socket, line, state) ->
+        token = if state.state is STATES.default then @parser.parseLine(line) else @parser.dataCollection()
+
         # The big if statement below is fine for the majority of cases,
         # however if we're waiting for the end of a DATA body we need to
         # do something extra special.
-        if token.meaning is 'data-collection' and @state is STATES.data and data is ""
-            @state = STATES.possibly_end_data
-        else if token.meaning is 'data-collection' and @state is STATES.possibly_end_data and data is "."
-            @state = STATES.default
+        #
+        # If it's the data state and it's a blank newline, we could possibly
+        # be about to end the data collection phase.
+        if token.meaning is 'data-collection' and state.state is STATES.data and line is ""
+            state.state = STATES.possibly_end_data
+
+        # If it's the data collection phase but we could possibly be about to end,
+        # check if it's a period (implicitly followed by a newline). If it is, then
+        # we need to get out of this state posthaste!
+        else if token.meaning is 'data-collection' and state.state is STATES.possibly_end_data and line is "."
+            state.state = STATES.default
             socket.write "250 Successsfully saved message (#1)\n"
+
+        # If we've made it this far and we're in the data state, then ensure we stay
+        # that way. If not, go back to default.
+        else if state.state is STATES.data or state.state is STATES.possibly_end_data
+            state.state = STATES.data
         else
-            @state = STATES.data
+            state.state = STATES.default
 
         # Carry on! Take a look at each token's "meaning" and set up the
         # email and/or respond in a certain way because of it.
+
+        # Is it a HELO or EHLO command?
         if token.meaning is 'hello'
             socket.write "250 Hello #{token.args.domain}, nice to meet you\n"
 
+        # Is it a MAIL FROM command? If it is, create a new email and set
+        # our from data to be the passed parameter
         else if token.meaning is 'from'
-            email = @newEmail()
-            email.from = token.args.email
+            state.email = @newEmail()
+            state.email.from = token.args.email
 
             socket.write "250 OK\n"
 
+        # Is it a RCPT TO command? If it is, add our email to the to list!
         else if token.meaning is 'to'
-            email.to.push token.args.email
+            state.email.to.push token.args.email
             socket.write "250 OK\n"
 
+        # Is it a DATA command? Set our state to be in the data state and 
+        # get ready to read in the email
         else if token.meaning is 'data-start'
-            @state = STATES.data
-            email.body = ''
-
+            state.state = STATES.data
             socket.write "354 OK\n"
 
+        # Are we in the data collection phase? If the line is empty, it'll be a newline
+        # so make sure we account for that. If not, add away!
         else if token.meaning is 'data-collection'
-            email.body += data
+            if line is ""
+                state.email.body += "\n"
+            else
+                state.email.body += line
 
+        # The parser couldn't understand the command passed in, or the syntax
+        # was bad, so respond accordingly.
         else if token.meaning is 'wtf'
             socket.write "502 Command Not Implemented\n"
 

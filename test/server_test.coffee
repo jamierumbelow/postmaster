@@ -27,47 +27,47 @@ module.exports = testCase
             test.equal data, "220 localhost Postmaster #{VERSION}\n"
             test.done()
 
-    # testHello: (test) ->
-    #     onResponse @connection, (data) ->
-    #         test.equal data, "250 Hello postmaster-test-connection, nice to meet you"
-    #         test.done()
+    testHello: (test) ->
+        onResponse @connection, (data) ->
+            test.equal data, "250 Hello postmaster-test-connection, nice to meet you"
+            test.done()
 
-    #     @connection.write "HELO postmaster-test-connection\n"
+        @connection.write "HELO postmaster-test-connection\n"
 
-    # testOtherHello: (test) ->
-    #     onResponse @connection, (data) ->
-    #         test.equal data, "250 Hello other-test-connection, nice to meet you"
-    #         test.done()
+    testOtherHello: (test) ->
+        onResponse @connection, (data) ->
+            test.equal data, "250 Hello other-test-connection, nice to meet you"
+            test.done()
 
-    #     @connection.write "HELO other-test-connection\n"
+        @connection.write "HELO other-test-connection\n"
 
-    # testEhlo: (test) ->
-    #     onResponse @connection, (data) ->
-    #         test.equal data, "250 Hello postmaster-test-connection, nice to meet you"
-    #         test.done()
+    testEhlo: (test) ->
+        onResponse @connection, (data) ->
+            test.equal data, "250 Hello postmaster-test-connection, nice to meet you"
+            test.done()
 
-    #     @connection.write "EHLO postmaster-test-connection\n"
+        @connection.write "EHLO postmaster-test-connection\n"
 
-    # testFrom: (test) ->
-    #     onResponse @connection, (data) ->
-    #         test.equal data, "250 OK"
-    #         test.done()
+    testFrom: (test) ->
+        onResponse @connection, (data) ->
+            test.equal data, "250 OK"
+            test.done()
 
-    #     @connection.write "MAIL FROM:<test@example.com>\n"
+        @connection.write "MAIL FROM:<test@example.com>\n"
 
-    # testTo: (test) ->
-    #     n = 1
+    testTo: (test) ->
+        n = 1
 
-    #     onResponse @connection, (data) ->
-    #         test.equal data, "250 OK"
-    #         test.done() if n is 5
-    #         n++
+        onResponse @connection, (data) ->
+            test.equal data, "250 OK"
+            test.done() if n is 5
+            n++
             
-    #     @connection.write "RCPT TO:<other@example.com>\n"
-    #     @connection.write "RCPT TO:<another@example.com>\n"
-    #     @connection.write "RCPT TO:<some.other+email@example.com>\n"
-    #     @connection.write "RCPT TO:<again@another.example.com>\n"
-    #     @connection.write "RCPT TO:<weird.example+email@another.example.com>\n"
+        @connection.write "RCPT TO:<other@example.com>\n"
+        @connection.write "RCPT TO:<another@example.com>\n"
+        @connection.write "RCPT TO:<some.other+email@example.com>\n"
+        @connection.write "RCPT TO:<again@another.example.com>\n"
+        @connection.write "RCPT TO:<weird.example+email@another.example.com>\n"
 
     testData: (test) ->
         n = 1
@@ -78,7 +78,7 @@ module.exports = testCase
             else if n is 2
                 test.equal(data, "250 Successsfully saved message (#1)")
                 test.done()
-            
+
             n++
 
         @connection.write "DATA\n"

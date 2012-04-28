@@ -1,5 +1,7 @@
 # Postmaster
 
+[![Build Status](https://secure.travis-ci.org/jamierumbelow/postmaster.png?branch=master)](http://travis-ci.org/jamierumbelow/postmaster)
+
 Postmaster is a tiny SMTP server that stores all messages in memory and exposes an HTTP API to retrieve them later. This makes it really easy to test the headers and the content of your emails.
 
 ## Installation

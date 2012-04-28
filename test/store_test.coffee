@@ -33,3 +33,12 @@ module.exports = testCase
         test.equal @store.ids.length, 0
 
         test.done()
+
+    testAll: (test) ->
+        email = { from: 'test@example.com', to: [ 'another@example.com' ], body: 'Some email!' }
+        @store.add email
+
+        test.equal @store.all().length(), 1
+        test.equal @store.all()[1], email
+
+        test.done()

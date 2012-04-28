@@ -22,3 +22,6 @@ class exports.Store
     remove: (id) ->
         delete @emails[id]
         @ids.splice @ids.indexOf(id), 1
+
+    all: ->
+        @emails

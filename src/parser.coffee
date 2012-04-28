@@ -59,8 +59,8 @@ class exports.Parser
     # Parse an email message body, extracting headers and other important
     # information and separating headers and content itself.
     parseEmail: (email) ->
-        [ unparsed_headers, body ] = email.split "\n\n"
-
+        [ unparsed_headers, body ] = email.explode "\n\n", 2
+        
         unparsed_headers = unparsed_headers.split "\n"
         headers = {}
 
@@ -75,3 +75,12 @@ class exports.Parser
 
     parseSubject: (header) ->
         mimelib.decodeMimeWord(header)
+
+String::explode = (delimiter, limit) ->
+    splitted = this.split(delimiter)
+    array = splitted.splice 0, limit - 1
+    superfluous = splitted.join delimiter
+
+    array.push superfluous
+
+    array

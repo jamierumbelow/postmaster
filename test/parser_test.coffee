@@ -85,7 +85,7 @@ module.exports = testCase
         testEmail =
             from: 'test@example.com'
             to: [ 'another@test.example.com' ]
-            body: 'User-Agent: Postmaster\nContent-Type: text/html\n\nAnother email'
+            body: "User-Agent: Postmaster\nContent-Type: text/html\n\nAnother email\n\nWith more line breaks!"
 
         parsed = @parser.parseEmail(testEmail.body)
 
@@ -93,7 +93,7 @@ module.exports = testCase
         test.equal parsed.headers['User-Agent'], 'Postmaster'
         test.equal parsed.headers['Content-Type'], 'text/html'
 
-        test.equal parsed.body, 'Another email'
+        test.equal parsed.body, 'Another email\n\nWith more line breaks!'
 
         test.equal parsed.html, true
 

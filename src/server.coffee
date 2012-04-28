@@ -52,7 +52,14 @@ class exports.Server
         # we need to get out of this state posthaste!
         else if token.meaning is 'data-collection' and state.state is STATES.possibly_end_data and line is "."
             state.state = STATES.default
-            state.email.body = state.email.body.substring 0, state.email.body.length - 2
+
+            email = state.email
+            body = state.email.body.substring(0, state.email.body.length - 2)
+
+            state.email = @parser.parseEmail(body)
+            state.email.from = email.from
+            state.email.to = email.to
+
             id = @store.add state.email
 
             return socket.write "250 Successsfully saved message (##{id})\n"

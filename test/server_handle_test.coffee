@@ -56,7 +56,7 @@ module.exports = testCase
 		test.done()
 
 	testDataCollection: (test) ->
-		test.expect 18
+		test.expect 21
 
 		state =
 			state: Server.STATES.default
@@ -67,25 +67,29 @@ module.exports = testCase
 		@server.handler @socket, "DATA", state
 		test.equal state.state, Server.STATES.data
 
+		@server.handler @socket, "Header: value\n", state
+		test.equal state.state, Server.STATES.data
+		test.equal state.email.body, "Header: value\n\n"
+
 		@server.handler @socket, "Some test data", state
 		test.equal state.state, Server.STATES.data
-		test.equal state.email.body, "Some test data\n"
+		test.equal state.email.body, "Header: value\n\nSome test data\n"
 
 		@server.handler @socket, "More test", state
 		test.equal state.state, Server.STATES.data
-		test.equal state.email.body, "Some test data\nMore test\n"
+		test.equal state.email.body, "Header: value\n\nSome test data\nMore test\n"
 
 		@server.handler @socket, "", state
 		test.equal state.state, Server.STATES.possibly_end_data
-		test.equal state.email.body, "Some test data\nMore test\n\n"
+		test.equal state.email.body, "Header: value\n\nSome test data\nMore test\n\n"
 
 		@server.handler @socket, "Love,", state
 		test.equal state.state, Server.STATES.data
-		test.equal state.email.body, "Some test data\nMore test\n\nLove,\n"
+		test.equal state.email.body, "Header: value\n\nSome test data\nMore test\n\nLove,\n"
 
 		@server.handler @socket, "", state
 		test.equal state.state, Server.STATES.possibly_end_data
-		test.equal state.email.body, "Some test data\nMore test\n\nLove,\n\n"
+		test.equal state.email.body, "Header: value\n\nSome test data\nMore test\n\nLove,\n\n"
 
 		random_id = Math.floor(Math.random() * 10) + 1
 
@@ -95,6 +99,7 @@ module.exports = testCase
 				test.equal email.from, ''
 				test.equal email.to.length, 0
 				test.equal email.body, "Some test data\nMore test\n\nLove,"
+				test.equal email.headers['Header'], 'value'
 
 				random_id
 
